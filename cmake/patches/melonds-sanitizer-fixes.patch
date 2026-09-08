@@ -1,0 +1,214 @@
+diff --git a/src/NDSCart.cpp b/src/NDSCart.cpp
+index bfc07f93..30cfea49 100644
+--- a/src/NDSCart.cpp
++++ b/src/NDSCart.cpp
+@@ -48,6 +48,23 @@ constexpr u32 ByteSwap(u32 val)
+     return (val >> 24) | ((val >> 8) & 0xFF00) | ((val << 8) & 0xFF0000) | (val << 24);
+ }
+ 
++static u32 ReadUnalignedU32(const u8* address) noexcept
++{
++    u32 value;
++    memcpy(&value, address, sizeof(value));
++    return value;
++}
++
++static void WriteUnalignedU32(u8* address, u32 value) noexcept
++{
++    memcpy(address, &value, sizeof(value));
++}
++
++static void AddUnalignedU32(u8* address, u32 value) noexcept
++{
++    WriteUnalignedU32(address, ReadUnalignedU32(address) + value);
++}
++
+ void NDSCartSlot::Key1_Encrypt(u32* data) const noexcept
+ {
+     u32 y = data[0];
+@@ -1200,11 +1217,11 @@ void CartSD::ApplyDLDIPatchAt(u8* binary, u32 dldioffset, const u8* patch, u32 p
+     Log(LogLevel::Info, "existing driver is: %s\n", &binary[dldioffset+0x10]);
+     Log(LogLevel::Info, "new driver is: %s\n", &patch[0x10]);
+ 
+-    u32 memaddr = *(u32*)&binary[dldioffset+0x40];
++    u32 memaddr = ReadUnalignedU32(&binary[dldioffset+0x40]);
+     if (memaddr == 0)
+-        memaddr = *(u32*)&binary[dldioffset+0x68] - 0x80;
++        memaddr = ReadUnalignedU32(&binary[dldioffset+0x68]) - 0x80;
+ 
+-    u32 patchbase = *(u32*)&patch[0x40];
++    u32 patchbase = ReadUnalignedU32(&patch[0x40]);
+     u32 delta = memaddr - patchbase;
+ 
+     u32 patchsize = 1 << patch[0x0D];
+@@ -1212,64 +1229,64 @@ void CartSD::ApplyDLDIPatchAt(u8* binary, u32 dldioffset, const u8* patch, u32 p
+ 
+     memcpy(&binary[dldioffset], patch, patchlen);
+ 
+-    *(u32*)&binary[dldioffset+0x40] += delta;
+-    *(u32*)&binary[dldioffset+0x44] += delta;
+-    *(u32*)&binary[dldioffset+0x48] += delta;
+-    *(u32*)&binary[dldioffset+0x4C] += delta;
+-    *(u32*)&binary[dldioffset+0x50] += delta;
+-    *(u32*)&binary[dldioffset+0x54] += delta;
+-    *(u32*)&binary[dldioffset+0x58] += delta;
+-    *(u32*)&binary[dldioffset+0x5C] += delta;
+-
+-    *(u32*)&binary[dldioffset+0x68] += delta;
+-    *(u32*)&binary[dldioffset+0x6C] += delta;
+-    *(u32*)&binary[dldioffset+0x70] += delta;
+-    *(u32*)&binary[dldioffset+0x74] += delta;
+-    *(u32*)&binary[dldioffset+0x78] += delta;
+-    *(u32*)&binary[dldioffset+0x7C] += delta;
++    AddUnalignedU32(&binary[dldioffset+0x40], delta);
++    AddUnalignedU32(&binary[dldioffset+0x44], delta);
++    AddUnalignedU32(&binary[dldioffset+0x48], delta);
++    AddUnalignedU32(&binary[dldioffset+0x4C], delta);
++    AddUnalignedU32(&binary[dldioffset+0x50], delta);
++    AddUnalignedU32(&binary[dldioffset+0x54], delta);
++    AddUnalignedU32(&binary[dldioffset+0x58], delta);
++    AddUnalignedU32(&binary[dldioffset+0x5C], delta);
++
++    AddUnalignedU32(&binary[dldioffset+0x68], delta);
++    AddUnalignedU32(&binary[dldioffset+0x6C], delta);
++    AddUnalignedU32(&binary[dldioffset+0x70], delta);
++    AddUnalignedU32(&binary[dldioffset+0x74], delta);
++    AddUnalignedU32(&binary[dldioffset+0x78], delta);
++    AddUnalignedU32(&binary[dldioffset+0x7C], delta);
+ 
+     u8 fixmask = patch[0x0E];
+ 
+     if (fixmask & 0x01)
+     {
+-        u32 fixstart = *(u32*)&patch[0x40] - patchbase;
+-        u32 fixend = *(u32*)&patch[0x44] - patchbase;
++        u32 fixstart = ReadUnalignedU32(&patch[0x40]) - patchbase;
++        u32 fixend = ReadUnalignedU32(&patch[0x44]) - patchbase;
+ 
+         for (u32 addr = fixstart; addr < fixend; addr+=4)
+         {
+-            u32 val = *(u32*)&binary[dldioffset+addr];
++            u32 val = ReadUnalignedU32(&binary[dldioffset+addr]);
+             if (val >= patchbase && val < patchend)
+-                *(u32*)&binary[dldioffset+addr] += delta;
++                AddUnalignedU32(&binary[dldioffset+addr], delta);
+         }
+     }
+     if (fixmask & 0x02)
+     {
+-        u32 fixstart = *(u32*)&patch[0x48] - patchbase;
+-        u32 fixend = *(u32*)&patch[0x4C] - patchbase;
++        u32 fixstart = ReadUnalignedU32(&patch[0x48]) - patchbase;
++        u32 fixend = ReadUnalignedU32(&patch[0x4C]) - patchbase;
+ 
+         for (u32 addr = fixstart; addr < fixend; addr+=4)
+         {
+-            u32 val = *(u32*)&binary[dldioffset+addr];
++            u32 val = ReadUnalignedU32(&binary[dldioffset+addr]);
+             if (val >= patchbase && val < patchend)
+-                *(u32*)&binary[dldioffset+addr] += delta;
++                AddUnalignedU32(&binary[dldioffset+addr], delta);
+         }
+     }
+     if (fixmask & 0x04)
+     {
+-        u32 fixstart = *(u32*)&patch[0x50] - patchbase;
+-        u32 fixend = *(u32*)&patch[0x54] - patchbase;
++        u32 fixstart = ReadUnalignedU32(&patch[0x50]) - patchbase;
++        u32 fixend = ReadUnalignedU32(&patch[0x54]) - patchbase;
+ 
+         for (u32 addr = fixstart; addr < fixend; addr+=4)
+         {
+-            u32 val = *(u32*)&binary[dldioffset+addr];
++            u32 val = ReadUnalignedU32(&binary[dldioffset+addr]);
+             if (val >= patchbase && val < patchend)
+-                *(u32*)&binary[dldioffset+addr] += delta;
++                AddUnalignedU32(&binary[dldioffset+addr], delta);
+         }
+     }
+     if (fixmask & 0x08)
+     {
+-        u32 fixstart = *(u32*)&patch[0x58] - patchbase;
+-        u32 fixend = *(u32*)&patch[0x5C] - patchbase;
++        u32 fixstart = ReadUnalignedU32(&patch[0x58]) - patchbase;
++        u32 fixend = ReadUnalignedU32(&patch[0x5C]) - patchbase;
+ 
+         memset(&binary[dldioffset+fixstart], 0, fixend-fixstart);
+     }
+@@ -1280,11 +1297,11 @@ void CartSD::ApplyDLDIPatchAt(u8* binary, u32 dldioffset, const u8* patch, u32 p
+         binary[dldioffset+0x64] &= ~0x02;
+ 
+         // make writeSectors() return failure
+-        u32 writesec_addr = *(u32*)&binary[dldioffset+0x74];
++        u32 writesec_addr = ReadUnalignedU32(&binary[dldioffset+0x74]);
+         writesec_addr -= memaddr;
+         writesec_addr += dldioffset;
+-        *(u32*)&binary[writesec_addr+0x00] = 0xE3A00000; // mov r0, #0
+-        *(u32*)&binary[writesec_addr+0x04] = 0xE12FFF1E; // bx lr
++        WriteUnalignedU32(&binary[writesec_addr+0x00], 0xE3A00000); // mov r0, #0
++        WriteUnalignedU32(&binary[writesec_addr+0x04], 0xE12FFF1E); // bx lr
+     }
+ 
+     Log(LogLevel::Debug, "applied DLDI patch at %08X\n", dldioffset);
+@@ -1292,24 +1309,24 @@ void CartSD::ApplyDLDIPatchAt(u8* binary, u32 dldioffset, const u8* patch, u32 p
+ 
+ void CartSD::ApplyDLDIPatch(const u8* patch, u32 patchlen, bool readonly)
+ {
+-    if (*(u32*)&patch[0] != 0xBF8DA5ED ||
+-        *(u32*)&patch[4] != 0x69684320 ||
+-        *(u32*)&patch[8] != 0x006D6873)
++    if (ReadUnalignedU32(&patch[0]) != 0xBF8DA5ED ||
++        ReadUnalignedU32(&patch[4]) != 0x69684320 ||
++        ReadUnalignedU32(&patch[8]) != 0x006D6873)
+     {
+         Log(LogLevel::Error, "bad DLDI patch\n");
+         return;
+     }
+ 
+-    u32 offset = *(u32*)&ROM[0x20];
+-    u32 size = *(u32*)&ROM[0x2C];
++    u32 offset = ReadUnalignedU32(&ROM[0x20]);
++    u32 size = ReadUnalignedU32(&ROM[0x2C]);
+ 
+     u8* binary = &ROM[offset];
+ 
+     for (u32 i = 0; i < size; )
+     {
+-        if (*(u32*)&binary[i  ] == 0xBF8DA5ED &&
+-            *(u32*)&binary[i+4] == 0x69684320 &&
+-            *(u32*)&binary[i+8] == 0x006D6873)
++        if (ReadUnalignedU32(&binary[i  ]) == 0xBF8DA5ED &&
++            ReadUnalignedU32(&binary[i+4]) == 0x69684320 &&
++            ReadUnalignedU32(&binary[i+8]) == 0x006D6873)
+         {
+             Log(LogLevel::Debug, "DLDI structure found at %08X (%08X)\n", i, offset+i);
+             ApplyDLDIPatchAt(binary, i, patch, patchlen, readonly);
+diff --git a/src/Savestate.cpp b/src/Savestate.cpp
+index 61261e6a..b064e7ae 100644
+--- a/src/Savestate.cpp
++++ b/src/Savestate.cpp
+@@ -28,6 +28,11 @@ using Platform::Log;
+ using Platform::LogLevel;
+ 
+ static const char* SAVESTATE_MAGIC = "MELN";
++static constexpr u32 SAVESTATE_MAGIC_VALUE =
++    static_cast<u32>('M') |
++    (static_cast<u32>('E') << 8) |
++    (static_cast<u32>('L') << 16) |
++    (static_cast<u32>('N') << 24);
+ 
+ /*
+     Savestate format
+@@ -72,10 +77,10 @@ Savestate::Savestate(void *buffer, u32 size, bool save) :
+         u32 read_magic = 0;
+         Var32(&read_magic);
+ 
+-        if (read_magic != *((u32*)SAVESTATE_MAGIC))
++        if (read_magic != SAVESTATE_MAGIC_VALUE)
+         {
+             Log(LogLevel::Error, "savestate: expected magic number %#08x (%s), got %#08x\n",
+-                *((u32*)SAVESTATE_MAGIC),
++                SAVESTATE_MAGIC_VALUE,
+                 SAVESTATE_MAGIC,
+                 read_magic
+             );

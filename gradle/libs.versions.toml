@@ -1,0 +1,6 @@
+[versions]
+compileSdk = "37"
+minSdk = "26"
+ndk = "29.0.14206865"
+cmake = "3.22.1"
+
