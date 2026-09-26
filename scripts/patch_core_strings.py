@@ -326,6 +326,21 @@ def _source_identity_tokens():
     return sorted(tokens, key=len, reverse=True)
 
 
+def _binary_wide_identity_patterns(tokens):
+    """Return identities safe to scan across every ELF section.
+
+    Very short case-sensitive names are still scrubbed from complete strings in
+    ``.rodata``. Scanning those five-byte values across compressed/container
+    data and machine code makes a diversified build fail when unrelated binary
+    bytes happen to spell the same token.
+    """
+    return [
+        re.compile(re.escape(token))
+        for token in tokens
+        if len(token) >= 6
+    ]
+
+
 def _metadata_literals():
     """Return descriptive upstream text that the embedded frontend never shows.
 
@@ -881,15 +896,12 @@ def main():
                 re.compile(br"An internal error occurred with", re.IGNORECASE),
                 re.compile(br"contact the developer with the log file", re.IGNORECASE),
                 re.compile(br"DLDI driver", re.IGNORECASE),
-                re.compile(br"BTDMP", re.IGNORECASE),
-                re.compile(br"Btdmp"),
                 re.compile(br"Unimplemented MMIO space", re.IGNORECASE),
                 re.compile(br"MMIO: cell", re.IGNORECASE),
                 re.compile(br"DSIG"),
             ]
             strict_forbidden_patterns.extend(
-                re.compile(re.escape(token))
-                for token in strict_source_identity_tokens
+                _binary_wide_identity_patterns(strict_source_identity_tokens)
             )
             strict_rodata_fingerprints = (
                 b"Slot 1 & 2 Boot",

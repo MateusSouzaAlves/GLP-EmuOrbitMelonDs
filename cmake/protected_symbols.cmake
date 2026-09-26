@@ -412,3 +412,31 @@ function(emuorbit_compute_ds_symbols seed context)
     set(EMUORBIT_BUILD_SEED_RESOLVED "${seed}" PARENT_SCOPE)
     set(EMUORBIT_BUILD_CONTEXT_RESOLVED "${context}" PARENT_SCOPE)
 endfunction()
+
+# Primary-core diversification is kept separate so the DS module and the
+# consolidated primary core can derive independent names from one build seed.
+function(emuorbit_compute_primary_symbols seed)
+    if("${seed}" STREQUAL "")
+        message(FATAL_ERROR
+                "EMUORBIT_BUILD_SEED is required; Gradle generates one per invocation")
+    endif()
+
+    string(LENGTH "${seed}" _emuorbit_seed_length)
+    if(_emuorbit_seed_length LESS 8 OR _emuorbit_seed_length GREATER 128
+            OR NOT "${seed}" MATCHES "^[A-Za-z0-9._-]+$")
+        message(FATAL_ERROR
+                "EMUORBIT_BUILD_SEED must be 8-128 ASCII letters, digits, '.', '_' or '-'")
+    endif()
+
+    string(SHA256 _emuorbit_primary_option_hash "${seed}|primary-options")
+    string(SUBSTRING "${_emuorbit_primary_option_hash}" 0 11
+            _emuorbit_primary_option_short_hash)
+    set(EMUORBIT_PRIMARY_OPTION_PREFIX
+            "q${_emuorbit_primary_option_short_hash}_" PARENT_SCOPE)
+    string(SHA256 _emuorbit_primary_label_hash "${seed}|primary-label")
+    string(SUBSTRING "${_emuorbit_primary_label_hash}" 0 13
+            _emuorbit_primary_label_short_hash)
+    set(EMUORBIT_PRIMARY_LIBRARY_LABEL
+            "q${_emuorbit_primary_label_short_hash}" PARENT_SCOPE)
+    set(EMUORBIT_BUILD_SEED_RESOLVED "${seed}" PARENT_SCOPE)
+endfunction()

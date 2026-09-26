@@ -1,0 +1,6 @@
+LIBRETRO_1 {
+    global:
+        retro_*;
+    local:
+        *;
+};

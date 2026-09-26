@@ -1,83 +1,55 @@
-# Código-fonte correspondente do componente Nintendo DS
+# Código-fonte correspondente — Nintendo DS
 
-Este repositório contém somente o código-fonte correspondente ao componente de
-Nintendo DS distribuído pelo EmuOrbit Advance, incluindo as modificações e os
-scripts usados para gerar o módulo nativo protegido. Ele não contém o aplicativo
-Android hospedeiro, jogos, BIOS, firmware, saves, chaves, mapas privados,
-telemetria, monetização, recursos visuais ou dados pessoais.
+Este repositório contém a fonte, os patches e os scripts que geram o
+componente Nintendo DS distribuído pelo EmuOrbit Advance. A revisão marcada
+por `gpl-source-2026-09-26` é uma fonte de distribuição ativa: ela não é um
+protótipo, uma prova local nem uma amostra experimental.
 
-Esta é uma versão modificada dos projetos upstream. As modificações desta
-distribuição foram consolidadas em **8 de setembro de 2026** e estão nos
-diretórios `melondscore`, `cmake` e `scripts`.
+O pacote não contém ROMs, BIOS, firmware, chaves, saves, credenciais,
+telemetria, monetização, dados de usuário ou binários pré-compilados.
 
-## Licença e origem
+## Escopo e origem
 
-O conjunto é distribuído sob a **GNU General Public License versão 3 ou
-posterior**, conforme os arquivos `LICENSE` dos projetos e a licença na raiz.
+O componente é distribuído sob **GNU GPL versão 3 ou posterior**.
 
-- `third_party/melonds`: melonDS no commit
+- `third_party/melonds`: melonDS em
   `7117178c2dd56df32b6534ba6a54ad1f8547e693`;
-- `third_party/melonds-ds`: frontend melonDS DS no commit
+- `third_party/melonds-ds`: frontend melonDS DS em
   `bc4e4b67d2d470d7c682810a1e892cafd6f9082b`;
-- `melondscore`, `cmake` e `scripts`: integração e modificações usadas na
-  compilação do componente distribuído.
+- `melondscore`, `cmake` e `scripts`: integração, patches e empacotamento do
+  core ARM64;
+- [EmuOrbit Advance, tag `gpl-source-2026-09-26`](https://github.com/MateusSouzaAlves/EmuOrbit-Advance/tree/gpl-source-2026-09-26): bridge JNI/libretro e
+  integração Android que carregam este componente na distribuição final.
 
-Os dois projetos upstream são submódulos Git. Clone recursivamente ou execute:
+Os dois upstreams são submódulos Git. Após clonar, execute:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-## Requisitos de compilação
+## Compilação
 
-- JDK 17;
-- Android SDK 37;
-- Android NDK `29.0.14206865`;
-- CMake `3.22.1` instalado pelo Android SDK;
-- Python 3;
-- Git.
+Requisitos: JDK 17, Android SDK 37, Android NDK `29.0.14206865`, CMake
+`3.22.1`, Python 3 e Git. Defina `ANDROID_HOME` ou `sdk.dir` em um
+`local.properties` não versionado.
 
-Defina `ANDROID_HOME` ou `sdk.dir` em um `local.properties` ignorado pelo Git
-para apontar para a instalação local do Android SDK.
-
-O build usa somente `arm64-v8a`, a ABI distribuída pelo aplicativo. No Windows:
+O componente usa apenas `arm64-v8a`. No Windows:
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
-.\gradlew.bat :melondscore:assembleRelease
-```
-
-Em Linux/macOS:
-
-```bash
-./gradlew :melondscore:assembleRelease
-```
-
-O Gradle cria uma seed descartável por invocação. Para uma reconstrução
-determinística de diagnóstico, use uma seed ASCII de 8 a 128 caracteres:
-
-```powershell
 .\gradlew.bat :melondscore:assembleRelease -PEMUORBIT_BUILD_SEED=source-build-0001
 ```
 
-As saídas ficam em `melondscore/build/`. A árvore upstream é copiada para essa
-pasta antes da aplicação das correções; os submódulos fixados não são alterados.
+As saídas ficam em `melondscore/build/`. A árvore upstream é copiada para a
+build antes das correções; os submódulos fixados não são alterados.
 
-## Escopo das modificações
+## Fonte correspondente e publicação
 
-- correções de acesso desalinhado usadas pelos diagnósticos nativos;
-- redução de mensagens e identificadores não funcionais no binário final;
-- codificação temporária de literais funcionais, com limpeza após o uso;
-- ocultação de símbolos, ThinLTO, strip, RELRO, NOW, NX e exportação mínima;
-- nomes e layout diversificados por build;
-- empacotamento do ELF em contêiner autenticado para integração no aplicativo.
+`CORRESPONDING_SOURCE.json` registra a composição da fonte. Para cada novo
+artefato distribuído, publique primeiro uma tag de fonte, registre a URL, a
+tag, os commits dos upstreams e o hash do binário no repositório do app, e
+mantenha essa fonte disponível enquanto o artefato for distribuído.
 
-Os mecanismos de proteção não mudam os direitos concedidos pela GPL. O código
-gerado pode ser estudado, modificado e redistribuído nos termos da licença.
-
-## Correspondência com uma versão distribuída
-
-O commit deste repositório e os dois gitlinks acima identificam a fonte. Uma
-publicação do aplicativo deve registrar o commit público correspondente àquela
-versão. Nenhum binário comercial, ROM ou dado do usuário é necessário para
-compilar este componente.
+Os mecanismos de hardening e o contêiner autenticado não alteram os direitos
+da GPL: a fonte pode ser estudada, modificada e redistribuída nos termos da
+licença.

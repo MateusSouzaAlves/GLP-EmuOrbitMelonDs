@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "status": "CURRENT_DISTRIBUTABLE_COMPONENT_SOURCE",
+  "component": "EmuOrbit Nintendo DS",
+  "license": "GPL-3.0-or-later",
+  "publicRemote": "https://github.com/MateusSouzaAlves/GLP-EmuOrbitMelonDs",
+  "sourceTag": "gpl-source-2026-09-26",
+  "hostApplication": {
+    "repository": "https://github.com/MateusSouzaAlves/EmuOrbit-Advance",
+    "sourceTag": "gpl-source-2026-09-26",
+    "requiredPaths": [
+      "app/src/main/cpp/bridge",
+      "app/src/main/java/com/mateussouza/emuorbit/advance/emulator/nativebridge",
+      "app/build.gradle.kts"
+    ]
+  },
+  "upstreams": {
+    "melonds": "7117178c2dd56df32b6534ba6a54ad1f8547e693",
+    "melondsDs": "bc4e4b67d2d470d7c682810a1e892cafd6f9082b"
+  },
+  "excluded": [
+    "ROMs, BIOS, firmware and keys",
+    "saves and user data",
+    "credentials and signing keys",
+    "precompiled distribution artifacts"
+  ]
+}
