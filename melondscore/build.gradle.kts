@@ -1,4 +1,53 @@
 import org.gradle.api.tasks.Sync
+import groovy.json.JsonSlurper
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.file.FileSystemOperations
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
+import javax.inject.Inject
+import java.security.MessageDigest
+
+// Native CMake rekeys the container on each build. Register a real generated
+// source producer, rather than an eagerly resolved static assets directory:
+// Gradle must snapshot the new files AFTER externalNativeBuild has completed.
+abstract class StageProtectedDsAssets : DefaultTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val nativeContainerDirectory: DirectoryProperty
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val privateIdentityMap: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @get:Inject
+    abstract val fileSystem: FileSystemOperations
+
+    @TaskAction
+    fun stage() {
+        val identity = JsonSlurper().parse(privateIdentityMap.get().asFile) as Map<*, *>
+        val containerName = identity["container"] as? String
+        check(containerName != null && Regex("q[0-9a-f]{23}").matches(containerName)) {
+            "Invalid private DS container identity; refusing to package stale assets"
+        }
+        val source = nativeContainerDirectory.get().asFile
+        val files = source.listFiles()?.toList().orEmpty()
+        check(files.size == 1 && files.single().isFile && files.single().name == containerName) {
+            "Generated DS assets must contain only the current protected container"
+        }
+        fileSystem.sync {
+            from(source)
+            into(outputDirectory)
+        }
+    }
+}
 
 plugins {
     id("com.android.library")
@@ -266,11 +315,6 @@ android {
         }
     }
 
-    sourceSets {
-        getByName("debug").assets.directories.add(debugCoreContainer)
-        getByName("release").assets.directories.add(releaseCoreContainer)
-    }
-
     packaging {
         jniLibs {
             excludes += "**/q*.so"
@@ -278,11 +322,34 @@ android {
     }
 }
 
-tasks.matching { it.name == "mergeDebugAssets" }.configureEach {
-    dependsOn("externalNativeBuildDebug")
+androidComponents.onVariants { variant ->
+    val capitalizedVariant = variant.name.replaceFirstChar { it.uppercaseChar() }
+    val stageAssets = tasks.register<StageProtectedDsAssets>("stage${capitalizedVariant}ProtectedDsAssets") {
+        dependsOn("externalNativeBuild$capitalizedVariant")
+        // A fresh native identity must invalidate staging even if Gradle's VFS
+        // still holds the previous externally generated directory snapshot.
+        inputs.property("nativeBuildIdentityDigest", MessageDigest.getInstance("SHA-256")
+            .digest(protectedBuildSeed.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) })
+        nativeContainerDirectory.set(layout.buildDirectory.dir("generated/core-container/${variant.name}"))
+        privateIdentityMap.set(layout.buildDirectory.file("outputs/hardening/${variant.name}/identity-map.json"))
+        outputDirectory.set(layout.buildDirectory.dir("generated/packaged-core-container/${variant.name}"))
+    }
+    variant.sources.assets?.addGeneratedSourceDirectory(stageAssets, StageProtectedDsAssets::outputDirectory)
 }
-tasks.matching { it.name == "mergeReleaseAssets" }.configureEach {
-    dependsOn("externalNativeBuildRelease")
+// These files are CMake side effects outside .cxx. Without declared outputs,
+// Gradle can retain their previous VFS snapshots during an incremental build.
+// Attach them to the ACTUAL native execution task, not a no-action lifecycle
+// aggregate. ARM64 is the only ABI of this module, so outputs have one owner.
+tasks.configureEach {
+    val nativeVariant = when {
+        name.startsWith("buildCMakeDebug[") -> "debug"
+        name.startsWith("buildCMakeRelWithDebInfo[") -> "release"
+        else -> null
+    }
+    if (nativeVariant != null) {
+        outputs.dir(layout.buildDirectory.dir("generated/core-container/$nativeVariant"))
+        outputs.file(layout.buildDirectory.file("outputs/hardening/$nativeVariant/identity-map.json"))
+    }
 }
 tasks.matching { it.name.startsWith("configureCMake") }.configureEach {
     dependsOn(preparePatchedMelondsSources, prepareStableFetchContentSources)

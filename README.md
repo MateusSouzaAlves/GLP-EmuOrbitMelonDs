@@ -53,3 +53,14 @@ mantenha essa fonte disponível enquanto o artefato for distribuído.
 Os mecanismos de hardening e o contêiner autenticado não alteram os direitos
 da GPL: a fonte pode ser estudada, modificada e redistribuída nos termos da
 licença.
+
+
+## Component source refresh — 2026-10-24
+
+This tip updates the component sources/recipes identified in the source
+snapshot manifest. Older tags/commits remain historical snapshots. It does
+not assert that this entire current snapshot was the source of an earlier
+Play release, and does not certify the closed combined app or publish its
+remaining private host. References above to older artifact hashes or private
+application tags retain historical scope; they are not publicly available
+host-source substitutes. See SOURCE_REFRESH.md and releases/component-source-2026-10-24/manifest.json.

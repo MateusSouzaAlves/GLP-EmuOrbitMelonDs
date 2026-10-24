@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "snapshot": "component-source-2026-10-24",
+  "date": "2026-10-24",
+  "repository": "https://github.com/MateusSouzaAlves/GLP-EmuOrbitMelonDs",
+  "scope": "Reviewed component-source refresh, not all sources of the combined closed application or a legal compliance certificate.",
+  "supersedes_public_commit": "6102ce11fe0e5d1a564ad7edac1643fa4c5e913e",
+  "private_source_base_reference": "351b21363200a74b9ed8e6c46303f02b05ffff84",
+  "artifact_binding": {
+    "status": "NOT_ASSERTED_FOR_HISTORICAL_PLAY_OR_ENTIRE_CURRENT_PRIVATE_WORKTREE",
+    "reason": "Exact files and derivations recorded here; old snapshot tags remain immutable. Complete distributed artifact correspondence is a separate verification."
+  },
+  "verification": {
+    "checks": [
+      "PASS_STANDALONE_GRADLE_MODULE_TASK_CONFIGURATION_OFFLINE"
+    ],
+    "full_app_build_or_gameplay": false,
+    "save_update_test": false,
+    "legal_combined_work_certificate": false
+  },
+  "upstream_gitlinks": [
+    {
+      "path": "third_party/melonds",
+      "commit": "7117178c2dd56df32b6534ba6a54ad1f8547e693"
+    },
+    {
+      "path": "third_party/melonds-ds",
+      "commit": "bc4e4b67d2d470d7c682810a1e892cafd6f9082b"
+    }
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 196,
+      "sha256": "611bf8a18609ff3f42ff2e80db098621bfeb9d081759a1e5ca52d2b8788174c2"
+    },
+    {
+      "path": ".gitmodules",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 229,
+      "sha256": "4f1b700d433746442b9b9e7329b110c0a8c69a016e941448cda4993ce68e1bb3"
+    },
+    {
+      "path": "CORRESPONDING_SOURCE.json",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 1219,
+      "sha256": "c965cbbf126819769bc2e00dd9837a0b97079f00b7546e7d76ad69dfa6fb43bb"
+    },
+    {
+      "path": "LICENSE",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 35147,
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "path": "README.md",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 2859,
+      "sha256": "4bb369f2c921af798a68686f7bd8392d08a52cd3291630f5dadc53b85be974c3"
+    },
+    {
+      "path": "SOURCE_REFRESH.md",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 1007,
+      "sha256": "d634d0371f8cbc7784e7162e5485dd878bdf4974769aec0d1c4dec87a2268691"
+    },
+    {
+      "path": "build.gradle.kts",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 1134,
+      "sha256": "a1a3f70ca96eb53b467318186cddcc4935c18ccd1b7dbd5bcef279db3ff61dfa"
+    },
+    {
+      "path": "cmake/native_sanitizers.cmake",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 1963,
+      "sha256": "26b2ec799b52da97e7f1a2fda019d9f92f2157c9a977aa5f77d481d11a32f292"
+    },
+    {
+      "path": "cmake/patches/melonds-sanitizer-fixes.patch",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 8481,
+      "sha256": "17f9f093d67520be3298f4b733811732975954ab181e5094bd72c8199795514c"
+    },
+    {
+      "path": "cmake/protected_symbols.cmake",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 22722,
+      "sha256": "51385edfc8eae8525e9f216431ff62c8e813cfd09421a9f078ce336a6e45f2dc"
+    },
+    {
+      "path": "gradle.properties",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 202,
+      "sha256": "f35386f5f073b850f75061bdb2404e7a525e19b461c1a06f44f0313e911eaf59"
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 83,
+      "sha256": "5e84334bcf4b78dad98ed65db4bb5bc39af3d860a6aa109ae8a2c6a8a470202c"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.jar",
+      "normalization": "raw",
+      "normalized_bytes": 48462,
+      "sha256": "497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.properties",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 368,
+      "sha256": "c4b9669284de8eb1bbf2801c8e705b278651a0d48693a829fc39c1d2739249cb"
+    },
+    {
+      "path": "gradlew",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 8654,
+      "sha256": "ab5c0cad16305af2e619c159c1f58dd68d07fab9c11e36701e109c0277407f7a"
+    },
+    {
+      "path": "gradlew.bat",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 2764,
+      "sha256": "5c0a21ecd6b3a6292e0746bff3b75fd2d8f47b9ff226ce53dc22b30184ef3bec"
+    },
+    {
+      "path": "melondscore/build.gradle.kts",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 15443,
+      "sha256": "c190871ed1b7914b859646f2483dea6839c60fe8d27056dbd9ef5075e2611fd0"
+    },
+    {
+      "path": "melondscore/src/main/AndroidManifest.xml",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 52,
+      "sha256": "daa0fb1f32ba7ea85a07ef6302ab3d58c3407d7fd2aa03ec132cb9e38e8d9849"
+    },
+    {
+      "path": "melondscore/src/main/cpp/libretro.exports.map",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 67,
+      "sha256": "989377da89dd4a710ff997f20afbb7a90056cbfb2e4785cc4e6b6cf172ed2540"
+    },
+    {
+      "path": "melondscore/src/main/cpp/melonds_hardening.cmake",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 16480,
+      "sha256": "fa568de0d282b14d99a0e7ada2197b1244cda699349a902d396c1363fb198448"
+    },
+    {
+      "path": "melondscore/src/main/cpp/protected_literal.hpp",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 2670,
+      "sha256": "4d10c49b354583d406a1e29dae890aa62a61ca970b760a1dceeeed820a51abef"
+    },
+    {
+      "path": "melondscore/src/main/cpp/quiet_core_log.cpp",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 703,
+      "sha256": "04cfe36a922ce6357a051a107ed96ba91775a2c15d32cb09758d81a3e5ed4aba"
+    },
+    {
+      "path": "scripts/package_core_container.py",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 6065,
+      "sha256": "c9cdc406faef4065d4670b20bf5bb70d3da37f3f48f0e47ff5ddf1669e78b980"
+    },
+    {
+      "path": "scripts/patch_core_strings.py",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 42202,
+      "sha256": "5625398859e8111b5501600bbe775f84b51984d2b229ecc0c1f25fd60b1135c2"
+    },
+    {
+      "path": "scripts/patch_protected_core_sources.py",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 6341,
+      "sha256": "aa94f524446e7ac701e9e16e17f3eca696be7c61994ac8cc68d1f20c3c3286ef"
+    },
+    {
+      "path": "scripts/verify-source-snapshot.py",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 3431,
+      "sha256": "854b409cd620c16ef630e8aa22d43fc8cdfa37bded9d28c8c68fd17dba4e9c4b"
+    },
+    {
+      "path": "settings.gradle.kts",
+      "normalization": "text-crlf-to-lf",
+      "normalized_bytes": 353,
+      "sha256": "729ac257cbb1fc6f8b1db6097570a0921b3c3d3826b97d7bd0202fbdd51afefb"
+    }
+  ]
+}
